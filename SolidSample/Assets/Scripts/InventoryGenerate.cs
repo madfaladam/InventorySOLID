@@ -6,7 +6,7 @@ using UnityEngine;
 public class InventoryGenerate : MonoBehaviour
 {
     [SerializeField] GameObject itemPref;
-    [SerializeField] Transform itemContainer;
+    public Transform itemContainer;
     [Space]
     [SerializeField] Sprite[] weaponSprites;
     [SerializeField] Sprite[] accessorySprites;

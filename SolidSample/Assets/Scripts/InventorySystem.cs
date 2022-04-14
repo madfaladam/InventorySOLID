@@ -12,12 +12,11 @@ public class InventorySystem : MonoBehaviour
     [Space]
     [SerializeField] InventoryUI inventoryUI;
     [SerializeField] InventoryGenerate inventoryGenerate;
+    [SerializeField] InventorySearch inventorySearch;
 
     // Start is called before the first frame update
     void Start()
     {
-        Application.targetFrameRate = 60;
-
         LoadComponents();
         InitUI();
     }
@@ -26,11 +25,23 @@ public class InventorySystem : MonoBehaviour
     {
         inventoryUI = GetComponent<InventoryUI>();
         inventoryGenerate = GetComponent<InventoryGenerate>();
+        inventorySearch = GetComponent<InventorySearch>();
     }
 
     private void InitUI()
     {
         inventoryUI.generateBtn.onClick.AddListener(GenerateItem);
+        inventoryUI.searchBtn.onClick.AddListener(SearchItem);
+    }
+
+    private void SearchItem()
+    {
+        if (String.IsNullOrEmpty(inventoryUI.searchInput.text))
+        {
+            return;
+        }
+        inventorySearch.SearchItem(inventoryUI.searchInput.text, items, inventoryGenerate.itemContainer);
+        inventoryUI.searchInput.text = "";
     }
 
     [ContextMenu("GenerateItem")]
