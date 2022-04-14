@@ -33,8 +33,8 @@ public class InventoryGenerate : MonoBehaviour
 
             Properties properties = new Properties();
             properties.itemTypeEnum = (ItemTypeEnum)randomNumber;
-            properties.height = 5;
-            properties.width = 3;
+            properties.height = UnityEngine.Random.Range(1, 25);
+            properties.width = UnityEngine.Random.Range(1, 25);
 
             item.properties = properties;
 
@@ -51,7 +51,9 @@ public class InventoryGenerate : MonoBehaviour
         weaponIdx = 0;
         accessoryIdx = 0;
         potionIdx = 0;
+        LeanPool.DespawnAll();
     }
+
 
     private int GetNumberItem(int value)
     {

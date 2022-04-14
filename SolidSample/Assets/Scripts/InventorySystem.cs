@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class InventorySystem : MonoBehaviour
 {
@@ -13,6 +11,7 @@ public class InventorySystem : MonoBehaviour
     [SerializeField] InventoryUI inventoryUI;
     [SerializeField] InventoryGenerate inventoryGenerate;
     [SerializeField] InventorySearch inventorySearch;
+    [SerializeField] InventorySort inventorySort;
 
     // Start is called before the first frame update
     void Start()
@@ -26,12 +25,23 @@ public class InventorySystem : MonoBehaviour
         inventoryUI = GetComponent<InventoryUI>();
         inventoryGenerate = GetComponent<InventoryGenerate>();
         inventorySearch = GetComponent<InventorySearch>();
+        inventorySort = GetComponent<InventorySort>();
     }
 
     private void InitUI()
     {
-        inventoryUI.generateBtn.onClick.AddListener(GenerateItem);
-        inventoryUI.searchBtn.onClick.AddListener(SearchItem);
+        inventoryUI.generateInput.text = itemGenerateCount.ToString();
+
+        inventoryUI.OnGenerateItem += GenerateItem;
+        inventoryUI.OnSearchItem += SearchItem;
+        inventoryUI.OnSortItem += SortItem;
+
+        InventoryEvents.OnItemClicked += ClickItem;
+    }
+
+    private void SortItem(int value)
+    {
+        items = inventorySort.SortItem(inventoryUI.sortDropDown.options[inventoryUI.sortDropDown.value].text, items, inventoryGenerate.itemContainer);
     }
 
     private void SearchItem()
@@ -47,7 +57,8 @@ public class InventorySystem : MonoBehaviour
     [ContextMenu("GenerateItem")]
     private void GenerateItem()
     {
-        items = inventoryGenerate.GenerateItem(itemGenerateCount, items);
+        inventoryUI.sortDropDown.value = 0;
+        items = inventoryGenerate.GenerateItem(int.Parse(inventoryUI.generateInput.text), items);
 
         ViewItems();
     }
@@ -57,16 +68,14 @@ public class InventorySystem : MonoBehaviour
         for (int i = 0; i < items.Count; i++)
         {
             ItemObj itemObj = items[i].obj.GetComponent<ItemObj>();
-            itemObj.itemImg.sprite = items[i].icon;
-            int id = items[i].id;
-            itemObj.itemBtn.onClick.AddListener(()=>ClickItem(id));
+            itemObj.SetItem(items[i]);
         }
     }
 
-    private void ClickItem(int id)
+    private void ClickItem(Item item)
     {
-        inventoryUI.ItemImageShow.sprite = items[id].icon;
-        inventoryUI.ItemNameShow.text = items[id].name;
-        inventoryUI.ItemPropertiesShow.text = "Type: " + items[id].properties.itemTypeEnum + "\nHeight: " + items[id].properties.height + "\nWidth: " + items[id].properties.width;
+        inventoryUI.itemImageShow.sprite = item.icon;
+        inventoryUI.itemNameShow.text = item.name;
+        inventoryUI.itemPropertiesShow.text = "Type: " + item.properties.itemTypeEnum + "\nHeight: " + item.properties.height + "\nWidth: " + item.properties.width;
     }
 }
